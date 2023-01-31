@@ -1,8 +1,11 @@
 # shoppingapp
 
-A new Flutter project.
+![Screenshot_1](https://user-images.githubusercontent.com/31253617/215822938-0cf9260c-933c-4c52-b510-307c3f87d6d2.png)
 
-## Getting Started
+
+## Packages Used
+# Provider
+# Dio
 
 This project is a starting point for a Flutter application.
 
