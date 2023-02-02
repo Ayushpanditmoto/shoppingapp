@@ -3,7 +3,7 @@ import 'package:shoppingapp/screens/products_overviews_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'providers/cart.dart';
-
+import 'providers/orders.dart';
 import 'providers/products.dart';
 
 void main() {
@@ -23,6 +23,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (context) => Cart(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => Orders(),
         ),
       ],
       child: MaterialApp(
