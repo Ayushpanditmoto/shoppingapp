@@ -197,8 +197,28 @@ class Products with ChangeNotifier {
     return _items.firstWhere((element) => element.id == id);
   }
 
-  void addProduct() {
-    // _items.add(value);
+  void addProduct(Product value) {
+    final newProduct = Product(
+      id: DateTime.now().toString(),
+      name: value.name,
+      description: value.description,
+      image: value.image,
+      price: value.price,
+      quantity: value.quantity,
+      isFavorite: value.isFavorite,
+    );
+    _items.add(newProduct);
+    _items.insert(0, newProduct); // at the start of the list
     notifyListeners();
+  }
+
+  void updateProduct(String id, Product newProduct) {
+    final productIndex = _items.indexWhere((element) => element.id == id);
+    if (productIndex >= 0) {
+      _items[productIndex] = newProduct;
+      notifyListeners();
+    } else {
+      print('...');
+    }
   }
 }

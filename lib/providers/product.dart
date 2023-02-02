@@ -15,7 +15,7 @@ class Product with ChangeNotifier {
       required this.description,
       required this.image,
       required this.price,
-      required this.quantity,
+      this.quantity = 1,
       this.isFavorite = false});
 
   factory Product.fromJson(Map<String, dynamic> json) {

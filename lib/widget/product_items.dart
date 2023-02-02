@@ -58,7 +58,7 @@ class ProductItems extends StatelessWidget {
                       action: SnackBarAction(
                         label: 'UNDO',
                         onPressed: () {
-                          cart.removeItem(loadedProducts.id);
+                          cart.removeSingleItem(loadedProducts.id);
                         },
                       ),
                     ),
