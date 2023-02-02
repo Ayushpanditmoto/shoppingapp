@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../reusable/navigation.dart';
 import '../screens/edit_product_screen.dart';
+import 'package:provider/provider.dart';
+import '../providers/products.dart';
 
 class UserProductItems extends StatelessWidget {
   final String id;
@@ -38,7 +40,14 @@ class UserProductItems extends StatelessWidget {
               color: Theme.of(context).primaryColor,
             ),
             IconButton(
-              onPressed: () {},
+              onPressed: () {
+                Provider.of<Products>(context, listen: false).deleteProduct(id);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Product Deleted'),
+                  ),
+                );
+              },
               icon: const Icon(Icons.delete),
               color: Theme.of(context).colorScheme.error,
             ),
