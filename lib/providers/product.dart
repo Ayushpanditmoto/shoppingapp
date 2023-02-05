@@ -1,4 +1,6 @@
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class Product with ChangeNotifier {
   final String id;
@@ -30,8 +32,35 @@ class Product with ChangeNotifier {
     );
   }
 
-  void toggleFavoriteStatus() {
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'description': description,
+        'image': image,
+        'price': price,
+        'quantity': quantity,
+        'isFavorite': isFavorite,
+      };
+
+  void toggleFavoriteStatus() async {
+    final oldStatus = isFavorite;
     isFavorite = !isFavorite;
     notifyListeners();
+    try {
+      final response = await http.patch(
+        Uri.parse(
+            'https://projecttest-15371-default-rtdb.firebaseio.com/products/$id.json'),
+        body: json.encode({
+          'isFavorite': isFavorite,
+        }),
+      );
+      if (response.statusCode >= 400) {
+        isFavorite = oldStatus;
+        notifyListeners();
+      }
+    } catch (error) {
+      isFavorite = oldStatus;
+      notifyListeners();
+    }
   }
 }
