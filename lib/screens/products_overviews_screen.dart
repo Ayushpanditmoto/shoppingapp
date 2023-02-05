@@ -20,19 +20,19 @@ class ProductOverviewScreen extends StatefulWidget {
 class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
   var _showOnlyFavorites = false;
   // var _isInit = true;
-  var _isLoading = true;
+  // var _isLoading = true;
 
-  @override
-  void initState() {
-    super.initState();
-    Provider.of<Products>(context, listen: false)
-        .fetchAndSetProducts()
-        .then((_) {
-      setState(() {
-        _isLoading = false;
-      });
-    });
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   Provider.of<Products>(context, listen: false)
+  //       .fetchAndSetProducts()
+  //       .then((_) {
+  //     setState(() {
+  //       _isLoading = false;
+  //     });
+  //   });
+  // }
 
   // @override
   // void didChangeDependencies() {
@@ -93,15 +93,27 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
         ],
       ),
       drawer: const AppDrawer(),
-      body: _isLoading
-          ? const Center(
+      body: FutureBuilder(
+        future:
+            Provider.of<Products>(context, listen: false).fetchAndSetProducts(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
               child: CircularProgressIndicator(),
-            )
-          : Provider.of<Products>(context).items.isEmpty
-              ? const Center(
-                  child: Text('No products found!'),
-                )
-              : ProductGrid(showFavs: _showOnlyFavorites),
+            );
+          } else {
+            if (snapshot.error != null) {
+              return const Center(
+                child: Text('An error occurred!'),
+              );
+            } else {
+              return ProductGrid(
+                showFavs: _showOnlyFavorites,
+              );
+            }
+          }
+        },
+      ),
     );
   }
 }

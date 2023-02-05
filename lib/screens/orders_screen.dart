@@ -30,7 +30,25 @@ class _OrdersScreenState extends State<OrdersScreen> {
   Future? _ordersFuture;
 
   Future _obtainOrdersFuture() {
-    return Provider.of<Orders>(context, listen: false).fetchAndSetOrders();
+    return Provider.of<Orders>(context, listen: false)
+        .fetchAndSetOrders()
+        .catchError((error) {
+      return showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text('An error occurred!'),
+              content: const Text('Something went wrong.'),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Okay'))
+              ],
+            );
+          });
+    });
   }
 
   @override

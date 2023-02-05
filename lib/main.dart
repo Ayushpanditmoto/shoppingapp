@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:shoppingapp/screens/auth_screen.dart';
 import 'package:shoppingapp/screens/products_overviews_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'providers/auth.dart';
 import 'providers/cart.dart';
 import 'providers/orders.dart';
 import 'providers/products.dart';
@@ -19,22 +21,46 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (context) => Products(),
+          create: (context) => Auth(),
+        ),
+        ChangeNotifierProxyProvider<Auth, Products>(
+          create: (context) => Products(
+            "",
+            "",
+            [],
+          ),
+          update: (context, auth, previousProducts) => Products(
+            auth.token!,
+            auth.userId!,
+            previousProducts == null ? [] : previousProducts.items,
+          ),
         ),
         ChangeNotifierProvider(
           create: (context) => Cart(),
         ),
-        ChangeNotifierProvider(
-          create: (context) => Orders(),
+        ChangeNotifierProxyProvider<Auth, Orders>(
+          create: (context) => Orders(
+            "",
+            [],
+          ),
+          update: (context, auth, previousOrders) => Orders(
+            auth.token!,
+            previousOrders == null ? [] : previousOrders.orders,
+          ),
         ),
       ],
-      child: MaterialApp(
-          title: 'Flutter Demo',
+      child: Consumer<Auth>(
+        builder: (context, auth, _) => MaterialApp(
+          title: 'Shopping App',
           theme: ThemeData(
             primarySwatch: Colors.deepPurple,
             fontFamily: GoogleFonts.lato().fontFamily,
           ),
-          home: const ProductOverviewScreen()),
+          // home: const ProductOverviewScreen(),
+          home:
+              auth.isAuth ? const ProductOverviewScreen() : const AuthScreen(),
+        ),
+      ),
     );
   }
 }

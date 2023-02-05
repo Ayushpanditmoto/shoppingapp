@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../providers/auth.dart';
 import '../providers/cart.dart';
 import '../providers/product.dart';
 import '../screens/product_details_screen.dart';
@@ -17,6 +18,7 @@ class ProductItems extends StatelessWidget {
   Widget build(BuildContext context) {
     final loadedProducts = Provider.of<Product>(context, listen: false);
     final cart = Provider.of<Cart>(context, listen: false);
+    final auth = Provider.of<Auth>(context, listen: false);
 
     return Stack(
       children: [
@@ -29,7 +31,8 @@ class ProductItems extends StatelessWidget {
                   Consumer<Product>(builder: (context, loadedProducts, child) {
                 return IconButton(
                   onPressed: () {
-                    loadedProducts.toggleFavoriteStatus();
+                    loadedProducts.toggleFavoriteStatus(
+                        auth.token!, auth.userId!);
                   },
                   icon: Icon(
                     loadedProducts.isFavorite
