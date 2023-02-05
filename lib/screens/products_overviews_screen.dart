@@ -51,6 +51,7 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final productsContainer = Provider.of<Products>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         title: const Text('MyShop'),
@@ -94,8 +95,7 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
       ),
       drawer: const AppDrawer(),
       body: FutureBuilder(
-        future:
-            Provider.of<Products>(context, listen: false).fetchAndSetProducts(),
+        future: productsContainer.fetchAndSetProducts(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(

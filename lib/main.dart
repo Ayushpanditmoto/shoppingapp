@@ -30,8 +30,8 @@ class MyApp extends StatelessWidget {
             [],
           ),
           update: (context, auth, previousProducts) => Products(
-            auth.token!,
-            auth.userId!,
+            auth.token == null ? "" : auth.token!,
+            auth.userId == null ? "" : auth.userId!,
             previousProducts == null ? [] : previousProducts.items,
           ),
         ),
@@ -44,22 +44,33 @@ class MyApp extends StatelessWidget {
             [],
           ),
           update: (context, auth, previousOrders) => Orders(
-            auth.token!,
+            auth.token == null ? "" : auth.token!,
             previousOrders == null ? [] : previousOrders.orders,
           ),
         ),
       ],
       child: Consumer<Auth>(
         builder: (context, auth, _) => MaterialApp(
-          title: 'Shopping App',
-          theme: ThemeData(
-            primarySwatch: Colors.deepPurple,
-            fontFamily: GoogleFonts.lato().fontFamily,
-          ),
-          // home: const ProductOverviewScreen(),
-          home:
-              auth.isAuth ? const ProductOverviewScreen() : const AuthScreen(),
-        ),
+            title: 'Shopping App',
+            theme: ThemeData(
+              primarySwatch: Colors.deepPurple,
+              fontFamily: GoogleFonts.lato().fontFamily,
+            ),
+            // home: const ProductOverviewScreen(),
+            home: auth.isAuth
+                ? const ProductOverviewScreen()
+                : FutureBuilder(
+                    future: auth.tryAutoLogin(),
+                    builder: (context, authResultSnapshot) =>
+                        authResultSnapshot.connectionState ==
+                                ConnectionState.waiting
+                            ? const Scaffold(
+                                body: Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                              )
+                            : const AuthScreen(),
+                  )),
       ),
     );
   }
