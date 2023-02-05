@@ -5,7 +5,7 @@ import 'package:shoppingapp/providers/product.dart';
 import 'package:http/http.dart' as http;
 
 class Products with ChangeNotifier {
-  final List<Product> _items = [
+  List<Product> _items = [
     Product(
       id: 'p1',
       name: 'Red Shirt',
@@ -200,22 +200,44 @@ class Products with ChangeNotifier {
     return _items.firstWhere((element) => element.id == id);
   }
 
-  Future<void> addProduct(Product value) async {
+  Future<void> fetchAndSetProducts() async {
     const url =
         'https://projecttest-15371-default-rtdb.firebaseio.com/products.json';
-    return http
-        .post(
-      Uri.parse(url),
-      body: json.encode({
-        'name': value.name,
-        'description': value.description,
-        'image': value.image,
-        'price': value.price,
-        'quantity': value.quantity,
-        'isFavorite': value.isFavorite,
-      }),
-    )
-        .then((response) {
+    try {
+      final response = await http.get(Uri.parse(url));
+      final extractedData = json.decode(response.body) as Map<String, dynamic>;
+      final List<Product> loadedProducts = [];
+      extractedData.forEach((productId, productData) {
+        loadedProducts.add(Product(
+          id: productId,
+          name: productData['name'],
+          description: productData['description'],
+          image: productData['image'],
+          price: productData['price'],
+          quantity: productData['quantity'],
+          isFavorite: productData['isFavorite'],
+        ));
+      });
+      _items = loadedProducts;
+      notifyListeners();
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  Future<void> addProduct(Product value) async {
+    const url =
+        'https://projecttest-15371-default-rtdb.firebaseio.com/products';
+    try {
+      final response = await http.post(Uri.parse(url),
+          body: json.encode({
+            'name': value.name,
+            'description': value.description,
+            'image': value.image,
+            'price': value.price,
+            'quantity': value.quantity,
+            'isFavorite': value.isFavorite,
+          }));
       final newProduct = Product(
         id: json.decode(response.body)['name'],
         name: value.name,
@@ -226,11 +248,14 @@ class Products with ChangeNotifier {
         isFavorite: value.isFavorite,
       );
 
+      _items.insert(0, newProduct); // at the start of the list
       // _items.add(newProduct);
-      _items.insert(0, newProduct);
       notifyListeners();
-    });
-    // return Future.value(); // return Future.value() to avoid error
+    } catch (error) {
+      rethrow;
+    }
+
+    // print(json.decode(response.body));
   }
 
   void updateProduct(String id, Product newProduct) {
